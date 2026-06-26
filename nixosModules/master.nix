@@ -638,6 +638,11 @@ in
         default = [ pkgs.stdenv.hostPlatform.system ];
         description = "Systems that we will be build";
       };
+      evalWorkerAllowlist = lib.mkOption {
+        type = lib.types.nullOr (lib.types.listOf lib.types.str);
+        default = null;
+        description = "Workers by name which will run nix-eval-jobs";
+      };
       evalMaxMemorySize = lib.mkOption {
         type = lib.types.int;
         default = 2048;
@@ -990,6 +995,7 @@ in
                 build_systems = cfg.buildSystems;
                 eval_max_memory_size = cfg.evalMaxMemorySize;
                 eval_worker_count = cfg.evalWorkerCount;
+                eval_worker_allowlist = cfg.evalWorkerAllowlist;
                 domain = cfg.domain;
                 use_https = cfg.useHTTPS;
                 outputs_path = cfg.outputsPath;

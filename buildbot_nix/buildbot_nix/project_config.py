@@ -47,6 +47,7 @@ class ProjectConfig:
     """Configuration for config_for_project function."""
 
     worker_names: list[str]
+    eval_worker_names: list[str]
     nix_eval_config: NixEvalConfig
     build_config: BuildConfig
     per_repo_effects_secrets: dict[str, str]
@@ -163,7 +164,7 @@ def config_for_project(
             # This should prevent excessive memory usage.
             nix_eval_config(
                 project,
-                project_config.worker_names,
+                project_config.eval_worker_names,
                 git_url=project.get_project_url(),
                 nix_eval_config=project_config.nix_eval_config,
                 build_config=project_config.build_config,

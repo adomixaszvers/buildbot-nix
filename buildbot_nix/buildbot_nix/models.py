@@ -312,6 +312,7 @@ class BuildbotNixConfig(BaseModel):
     admins: list[str] = []
     local_workers: int = 0
     eval_worker_count: int | None = None
+    eval_worker_allowlist: list[str] | None = None
     gitea: GiteaConfig | None = None
     github: GitHubConfig | None = None
     pull_based: PullBasedConfig | None

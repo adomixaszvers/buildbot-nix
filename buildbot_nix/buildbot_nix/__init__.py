@@ -129,11 +129,18 @@ class NixConfigurator(ConfiguratorBase):
 
         return worker_names
 
+    def _setup_eval_workers(self, worker_names: list[str]) -> list[str]:
+        eval_worker_allowlist = self.config.eval_worker_allowlist
+        if eval_worker_allowlist is None:
+            return worker_names
+        return [w for w in worker_names if w in eval_worker_allowlist]
+
     def _configure_projects(
         self,
         config: dict[str, Any],
         projects: list[GitProject],
         worker_names: list[str],
+        eval_worker_names: list[str],
         eval_lock: util.MasterLock,
     ) -> list[GitProject]:
         """Configure individual projects and return succeeded projects."""
@@ -146,6 +153,7 @@ class NixConfigurator(ConfiguratorBase):
                     project=project,
                     project_config=ProjectConfig(
                         worker_names=worker_names,
+                        eval_worker_names=eval_worker_names,
                         nix_eval_config=NixEvalConfig(
                             supported_systems=self.config.build_systems,
                             failed_build_report_limit=self.config.failed_build_report_limit,
@@ -269,13 +277,14 @@ class NixConfigurator(ConfiguratorBase):
 
         # Setup workers
         worker_names = self._setup_workers(config)
+        eval_worker_names = self._setup_eval_workers(worker_names)
 
         # Initialize database and eval lock
         eval_lock = util.MasterLock("nix-eval")
 
         # Configure projects
         succeeded_projects = self._configure_projects(
-            config, projects, worker_names, eval_lock
+            config, projects, worker_names, eval_worker_names, eval_lock
         )
 
         # Setup backend services
